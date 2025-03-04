@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>点兔｜请问您今天要来点兔子吗？ 群管理规定</title>
     <style>
-        /* (样式部分与之前相同，为了避免重复，此处省略。请将之前提供的完整 CSS 代码复制到这里) */
-        /* 建议将CSS单独提取为.css文件，然后用<link>引入，这里为了保持单文件完整性，暂时内联 */
+        /* (之前的 CSS 样式) */
+        /* 添加以下新的 CSS 样式 */
         body {
             font-family: sans-serif;
             line-height: 1.6;
@@ -125,7 +125,18 @@
         .toc-link.active {
             background-color: #f9d7dd;
         }
+        /* 章节样式 */
+        .toc-item-chapter {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
 
+        /* 条目样式 */
+        .toc-item-section {
+            margin-left: 1em; /* 缩进 */
+        }
         .section-anchor {
             display: block;
             position: relative;
@@ -260,22 +271,20 @@
         fetch('text.md')
             .then(response => response.text())
             .then(text => {
-                // 使用 marked.js 渲染 Markdown
                 document.getElementById('content').innerHTML = marked.parse(text);
-                // 生成目录（在 Markdown 渲染完成后）
                 generateToc();
-                updateActiveTocItem(); // 初始加载时也更新一次
+                updateActiveTocItem();
             })
             .catch(error => {
                 console.error('Error fetching or rendering Markdown:', error);
                 document.getElementById('content').innerHTML = '<p>Error loading content.</p>';
             });
-        
-        // 2. 动态生成目录 (与之前基本相同，但现在在 Markdown 渲染后调用)
+
+        // 2. 动态生成目录
         function generateToc() {
             const tocList = document.querySelector('.toc-list');
-            tocList.innerHTML = ''; // 清空现有目录
-            const headings = document.querySelectorAll('.container h2, .container h3'); // 同时选择 h2 和 h3
+            tocList.innerHTML = ''; // 清空
+            const headings = document.querySelectorAll('.container h2, .container h3, .container h4'); // 选择 h2, h3, h4
 
             headings.forEach((heading, index) => {
                 const id = `section${index + 1}`;
@@ -284,12 +293,17 @@
                 const listItem = document.createElement('li');
                 listItem.classList.add('toc-item');
 
+                // 根据标题级别添加不同的 CSS 类
+                if (heading.tagName === 'H2') {
+                    listItem.classList.add('toc-item-chapter');
+                } else if (heading.tagName === 'H3') {
+                    listItem.classList.add('toc-item-section');
+                }
+
                 const link = document.createElement('a');
                 link.classList.add('toc-link');
                 link.href = `#${id}`;
                 link.textContent = heading.textContent;
-
-                // 添加平滑滚动
                 link.addEventListener('click', smoothScroll);
 
                 listItem.appendChild(link);
@@ -297,7 +311,7 @@
             });
         }
 
-        // 3. 平滑滚动函数 (与之前相同)
+        // 3. 平滑滚动 (与之前相同)
         function smoothScroll(event) {
             event.preventDefault();
             const targetId = event.target.getAttribute('href');
@@ -334,14 +348,12 @@
                 container.classList.toggle('toc-open');
             }
         }
-
-        // 5. 监听页面滚动，更新活动目录项 (与之前相同)
+        // 5. 更新活动目录项 (与之前相同，但选择器更新)
         function updateActiveTocItem() {
-            const headings = document.querySelectorAll('.container h2, .container h3'); // 更新为同时选择 h2 和 h3
+            const headings = document.querySelectorAll('.container h2, .container h3, .container h4');
             const tocLinks = document.querySelectorAll('.toc-link');
             let currentActiveIndex = -1;
 
-            // 找出当前滚动到的章节
             for (let i = headings.length - 1; i >= 0; i--) {
                 if (window.pageYOffset >= headings[i].offsetTop - 100) {
                     currentActiveIndex = i;
@@ -349,7 +361,6 @@
                 }
             }
 
-            // 更新目录项的活动状态
             tocLinks.forEach((link, index) => {
                 if (index === currentActiveIndex) {
                     link.classList.add('active');
@@ -358,10 +369,8 @@
                 }
             });
         }
-
         // 监听滚动事件
         window.addEventListener('scroll', updateActiveTocItem);
-
     </script>
 </body>
 </html>
