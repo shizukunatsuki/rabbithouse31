@@ -10,12 +10,12 @@
             line-height: 1.6;
             margin: 0;
             padding: 0;
-            background-color: #fcefed; /* 浅粉色背景 */
-            color: #6b4752; /* 深粉色文字 */
+            background-color: #fcefed;
+            color: #6b4752;
         }
 
         h1, h2, h3, h4, h5, h6 {
-            color: #d1495b; /* 标题颜色 */
+            color: #d1495b;
             margin-top: 1.5em;
             margin-bottom: 0.5em;
             line-height: 1.2;
@@ -54,12 +54,13 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             position: relative;
+            transition: padding-top 0.3s ease; /* 添加过渡效果 */
         }
 
         .version-info {
             text-align: right;
             font-style: italic;
-            color: #a57b87; /* 版本信息颜色 */
+            color: #a57b87;
         }
 
         .sub-item {
@@ -67,26 +68,30 @@
         }
 
         .important-note {
-            background-color: #ffe4e1; /* 浅粉色背景 */
-            border-left: 4px solid #f08080; /* 珊瑚粉边框 */
+            background-color: #ffe4e1;
+            border-left: 4px solid #f08080;
             padding: 10px;
             margin-bottom: 1em;
         }
 
         /* 目录容器 */
         .toc-container {
-            position: fixed; /* PC 端固定定位 */
+            position: fixed;
             top: 0;
-            left: 0; /* PC 端默认展开 */
+            left: 0;
             width: 250px;
             height: 100%;
-            background-color: #f8e2e7; /* 浅粉色背景 */
-            border-right: 1px solid #f08080; /* 珊瑚粉边框 */
+            background-color: #f8e2e7;
+            border-right: 1px solid #f08080;
             padding: 20px;
-            transition: transform 0.3s ease; /* 使用 transform 过渡 */
+            transition: transform 0.3s ease;
             overflow-y: auto;
             z-index: 1000;
             transform: translateX(0); /* PC 端初始位置 */
+        }
+
+        .toc-container.collapsed {
+            transform: translateX(-100%); /* PC 端隐藏 */
         }
 
         .toc-title {
@@ -116,7 +121,7 @@
 
         .toc-link:hover,
         .toc-link.active {
-            background-color: #f9d7dd; /* 悬停/活动状态背景色 */
+            background-color: #f9d7dd;
         }
 
         .section-anchor {
@@ -130,42 +135,111 @@
         .toc-toggle {
             position: fixed;
             top: 20px;
-            left: 20px;
+            left: 20px; /* 初始位置 */
             z-index: 1001;
-            background-color: #d1495b; /* 按钮背景色 */
+            background-color: #d1495b;
             color: #fff;
             border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            padding: 0;
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateX(250px); /* PC 端初始偏移 */
         }
 
         .toc-toggle:hover {
-            background-color: #b33a4c; /* 按钮悬停背景色 */
+            background-color: #b33a4c;
+        }
+        .toc-toggle:focus{
+            outline: none; /*去掉focus时可能出现的边框*/
+        }
+        /* 菜单图标 */
+        .toc-toggle-icon {
+            width: 20px;
+            height: 2px;
+            background-color: #fff;
+            display: block;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .toc-toggle-icon::before,
+        .toc-toggle-icon::after {
+            content: '';
+            width: 20px;
+            height: 2px;
+            background-color: #fff;
+            display: block;
+            position: absolute;
+            transition: transform 0.3s ease;
+        }
+
+        .toc-toggle-icon::before {
+            top: -6px;
+        }
+
+        .toc-toggle-icon::after {
+            top: 6px;
+        }
+
+        /* 展开状态下的图标 (X) */
+        .toc-container.open .toc-toggle-icon,
+        .toc-container:not(.collapsed) .toc-toggle-icon {
+            background-color: transparent;
+        }
+
+        .toc-container.open .toc-toggle-icon::before,
+        .toc-container:not(.collapsed) .toc-toggle-icon::before {
+            transform: rotate(45deg);
+            top: 0;
+        }
+
+        .toc-container.open .toc-toggle-icon::after,
+        .toc-container:not(.collapsed) .toc-toggle-icon::after {
+            transform: rotate(-45deg);
+            top: 0;
         }
 
         /* 移动端适配 */
         @media (max-width: 768px) {
             .toc-container {
-                position: absolute; /* 移动端绝对定位 */
-                transform: translateX(-100%); /* 移动端初始隐藏 */
+                position: absolute;
+                transform: translateX(-100%);
             }
 
             .toc-container.open {
-                transform: translateX(0); /* 移动端展开 */
+                transform: translateX(0);
+                position: fixed;
+            }
+
+            .toc-title {
+                padding-top: 40px;
             }
 
             .toc-toggle {
-                position: absolute; /* 移动端按钮绝对定位 */
-                left: 0; /* 按钮位置 */
+                position: fixed;
+                left: 20px; /* 移动端按钮位置 */
+                top: 20px;
+                transform: translateX(0); /* 移动端初始位置 */
+            }
+
+            /* 移动端目录展开时，内容下移 */
+            .container.toc-open {
+                padding-top: 60px;
             }
         }
     </style>
 </head>
 <body>
     <!-- 目录切换按钮 -->
-    <button class="toc-toggle" onclick="toggleToc()">目录</button>
+    <button class="toc-toggle" onclick="toggleToc()">
+        <span class="toc-toggle-icon"></span>
+    </button>
 
     <!-- 目录容器 -->
     <div class="toc-container">
@@ -457,7 +531,25 @@
     // 3. 切换目录显示/隐藏
     function toggleToc() {
         const tocContainer = document.querySelector('.toc-container');
+        const tocToggle = document.querySelector('.toc-toggle');
+        const container = document.querySelector('.container');
+        // 切换目录的显示/隐藏状态
         tocContainer.classList.toggle('open');
+
+        // PC 端目录的展开/折叠
+        if (window.innerWidth > 768) {
+            tocContainer.classList.toggle('collapsed');
+              // 调整按钮位置
+            if (tocContainer.classList.contains('collapsed')) {
+                tocToggle.style.transform = 'translateX(0)';
+            } else {
+                tocToggle.style.transform = 'translateX(250px)';
+            }
+        }
+        else{
+             // 移动端目录展开时，内容下移
+            container.classList.toggle('toc-open');
+        }
     }
 
     // 4. 监听页面滚动，更新活动目录项
