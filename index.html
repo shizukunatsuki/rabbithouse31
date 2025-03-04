@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>点兔｜请问您今天要来点兔子吗？ 群管理规定</title>
     <style>
-        /* (之前的 CSS 样式) */
-        /* 添加以下新的 CSS 样式 */
+        /* (CSS 样式与之前相同，此处省略) */
         body {
             font-family: sans-serif;
             line-height: 1.6;
@@ -56,7 +55,7 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             position: relative;
-            transition: padding-top 0.3s ease; /* 添加过渡效果 */
+            transition: padding-top: 0.3s ease; /* 添加过渡效果 */
         }
 
         .version-info {
@@ -118,7 +117,7 @@
             display: block;
             padding: 5px;
             border-radius: 3px;
-            transition: background-color 0.2s ease;
+            transition: background-color: 0.2s ease;
         }
 
         .toc-link:hover,
@@ -267,24 +266,35 @@
     </div>
 
     <script>
-        // 1.  读取 text.md 文件并渲染 Markdown
+        // 1. 读取 text.md 文件并渲染 Markdown
         fetch('text.md')
             .then(response => response.text())
             .then(text => {
-                document.getElementById('content').innerHTML = marked.parse(text);
-                generateToc();
-                updateActiveTocItem();
+                // 使用 marked.js 渲染 Markdown，并传入回调函数
+                marked.parse(text, (err, html) => {
+                    if (err) {
+                        console.error('Error rendering Markdown:', err);
+                        document.getElementById('content').innerHTML = '<p>Error loading content.</p>';
+                        return;
+                    }
+
+                    document.getElementById('content').innerHTML = html;
+
+                    // 在 Markdown 渲染 *完成* 后，生成目录并更新活动项
+                    generateToc();
+                    updateActiveTocItem();
+                });
             })
             .catch(error => {
-                console.error('Error fetching or rendering Markdown:', error);
+                console.error('Error fetching text.md:', error);
                 document.getElementById('content').innerHTML = '<p>Error loading content.</p>';
             });
 
-        // 2. 动态生成目录
+        // 2. 动态生成目录 (与之前相同)
         function generateToc() {
             const tocList = document.querySelector('.toc-list');
-            tocList.innerHTML = ''; // 清空
-            const headings = document.querySelectorAll('.container h2, .container h3, .container h4'); // 选择 h2, h3, h4
+            tocList.innerHTML = '';
+            const headings = document.querySelectorAll('.container h2, .container h3, .container h4');
 
             headings.forEach((heading, index) => {
                 const id = `section${index + 1}`;
@@ -293,7 +303,6 @@
                 const listItem = document.createElement('li');
                 listItem.classList.add('toc-item');
 
-                // 根据标题级别添加不同的 CSS 类
                 if (heading.tagName === 'H2') {
                     listItem.classList.add('toc-item-chapter');
                 } else if (heading.tagName === 'H3') {
@@ -325,18 +334,15 @@
             }
         }
 
-        // 4. 切换目录显示/隐藏 (与之前相同)
+        // 4. 切换目录 (与之前相同)
         function toggleToc() {
             const tocContainer = document.querySelector('.toc-container');
             const tocToggle = document.querySelector('.toc-toggle');
             const container = document.querySelector('.container');
-            // 切换目录的显示/隐藏状态
             tocContainer.classList.toggle('open');
 
-            // PC 端目录的展开/折叠
             if (window.innerWidth > 768) {
                 tocContainer.classList.toggle('collapsed');
-                // 调整按钮位置
                 if (tocContainer.classList.contains('collapsed')) {
                     tocToggle.style.transform = 'translateX(0)';
                 } else {
@@ -344,11 +350,11 @@
                 }
             }
             else{
-                // 移动端目录展开时，内容下移
                 container.classList.toggle('toc-open');
             }
         }
-        // 5. 更新活动目录项 (与之前相同，但选择器更新)
+
+        // 5. 更新活动目录项 (与之前相同)
         function updateActiveTocItem() {
             const headings = document.querySelectorAll('.container h2, .container h3, .container h4');
             const tocLinks = document.querySelectorAll('.toc-link');
@@ -369,8 +375,9 @@
                 }
             });
         }
-        // 监听滚动事件
+        // 监听滚动事件，由于generateToc()已确保只在渲染后执行一次，所以这里不需要再做额外处理
         window.addEventListener('scroll', updateActiveTocItem);
+
     </script>
 </body>
 </html>
