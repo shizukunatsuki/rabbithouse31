@@ -6,16 +6,16 @@
     <title>点兔｜请问您今天要来点兔子吗？ 群管理规定</title>
     <style>
         body {
-            font-family: sans-serif; /* 不指定具体字体，由客户端决定 */
+            font-family: sans-serif;
             line-height: 1.6;
-            margin: 20px;
+            margin: 0;
             padding: 0;
-            background-color: #f8f9fa;
-            color: #333;
+            background-color: #fcefed; /* 浅粉色背景 */
+            color: #6b4752; /* 深粉色文字 */
         }
 
         h1, h2, h3, h4, h5, h6 {
-            color: #0056b3;
+            color: #d1495b; /* 标题颜色 */
             margin-top: 1.5em;
             margin-bottom: 0.5em;
             line-height: 1.2;
@@ -24,8 +24,9 @@
         h1 {
             font-size: 2em;
             text-align: center;
-            border-bottom: 2px solid #0056b3;
+            border-bottom: 2px solid #d1495b;
             padding-bottom: 0.5em;
+            margin-bottom: 1em;
         }
 
         h2 { font-size: 1.5em; }
@@ -52,33 +53,132 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
-      
-        .version-info{
+
+        .version-info {
             text-align: right;
             font-style: italic;
-            color: #666;
+            color: #a57b87; /* 版本信息颜色 */
         }
 
         .sub-item {
             margin-left: 2em;
         }
-        
+
         .important-note {
-            background-color: #ffffe0;
-            border-left: 4px solid #ffd700;
+            background-color: #ffe4e1; /* 浅粉色背景 */
+            border-left: 4px solid #f08080; /* 珊瑚粉边框 */
             padding: 10px;
             margin-bottom: 1em;
         }
-        
+
+        /* 目录容器 */
+        .toc-container {
+            position: fixed; /* PC 端固定定位 */
+            top: 0;
+            left: 0; /* PC 端默认展开 */
+            width: 250px;
+            height: 100%;
+            background-color: #f8e2e7; /* 浅粉色背景 */
+            border-right: 1px solid #f08080; /* 珊瑚粉边框 */
+            padding: 20px;
+            transition: transform 0.3s ease; /* 使用 transform 过渡 */
+            overflow-y: auto;
+            z-index: 1000;
+            transform: translateX(0); /* PC 端初始位置 */
+        }
+
+        .toc-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #d1495b;
+        }
+
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc-item {
+            margin-bottom: 5px;
+        }
+
+        .toc-link {
+            text-decoration: none;
+            color: #6b4752;
+            display: block;
+            padding: 5px;
+            border-radius: 3px;
+            transition: background-color 0.2s ease;
+        }
+
+        .toc-link:hover,
+        .toc-link.active {
+            background-color: #f9d7dd; /* 悬停/活动状态背景色 */
+        }
+
+        .section-anchor {
+            display: block;
+            position: relative;
+            top: -80px;
+            visibility: hidden;
+        }
+
+        /* 目录切换按钮 */
+        .toc-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background-color: #d1495b; /* 按钮背景色 */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .toc-toggle:hover {
+            background-color: #b33a4c; /* 按钮悬停背景色 */
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .toc-container {
+                position: absolute; /* 移动端绝对定位 */
+                transform: translateX(-100%); /* 移动端初始隐藏 */
+            }
+
+            .toc-container.open {
+                transform: translateX(0); /* 移动端展开 */
+            }
+
+            .toc-toggle {
+                position: absolute; /* 移动端按钮绝对定位 */
+                left: 0; /* 按钮位置 */
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- 目录切换按钮 -->
+    <button class="toc-toggle" onclick="toggleToc()">目录</button>
+
+    <!-- 目录容器 -->
+    <div class="toc-container">
+        <div class="toc-title">目录</div>
+        <ul class="toc-list"></ul>
+    </div>
+
     <div class="container">
         <h1>点兔｜请问您今天要来点兔子吗？ 群管理规定</h1>
         <p>（群号：172846839）</p>
         <p>（生效日期：2025年3月4日）</p>
 
+        <a id="section1" class="section-anchor"></a>
         <h2>第一章 总则</h2>
 
         <h3>第一条 【目的与依据】</h3>
@@ -95,6 +195,7 @@
                 <li><strong>最终解释权：</strong> 本规定的最终解释权归本群群管理团队所有。在法律法规允许的范围内，群管理团队保留对本规定进行解释、修订的权利。</li>
             </ol>
         
+        <a id="section2" class="section-anchor"></a>
         <h2>第二章 成员权利与义务</h2>
         
         <h3>第一条 【成员权利】</h3>
@@ -162,6 +263,7 @@
             </li>
         </ol>
         
+        <a id="section3" class="section-anchor"></a>
         <h2>第三章 群组管理</h2>
         
         <h3>第一条 【管理员职责】</h3>
@@ -186,6 +288,7 @@
             <li>其他为维护群秩序和成员权益所必需的管理权限。</li>
         </ol>
         
+        <a id="section4" class="section-anchor"></a>
         <h2>第四章 违规处理及申诉</h2>
         
         <h3>第一条 【处理原则】</h3>
@@ -234,6 +337,7 @@
             </li>
         </ol>
         
+        <a id="section5" class="section-anchor"></a>
         <h2>第五章 版权与免责声明</h2>
         
         <h3>第一条 【成员言论责任自负】</h3>
@@ -279,6 +383,7 @@
             <li><strong>版权方权益：</strong> 如《请问您今天要来点兔子吗？》版权方认为本群的运营或成员行为侵犯了其合法权益，请通过[管理员联系方式，如QQ号]与管理员联系，我们将积极配合处理，并在必要时采取关闭本群等措施。</li>
         </ol>
         
+        <a id="section6" class="section-anchor"></a>
         <h2>第六章 附则</h2>
         
         <h3>第一条 【解释权】</h3>
@@ -309,5 +414,84 @@
         <p class="version-info">群管理团队</p>
         <p class="version-info">2025年3月4日</p>
     </div>
+    <script>
+    // 1. 动态生成目录
+    function generateToc() {
+        const tocList = document.querySelector('.toc-list');
+        const headings = document.querySelectorAll('.container h2');
+
+        headings.forEach((heading, index) => {
+            const id = `section${index + 1}`;
+            heading.id = id;
+
+            const listItem = document.createElement('li');
+            listItem.classList.add('toc-item');
+
+            const link = document.createElement('a');
+            link.classList.add('toc-link');
+            link.href = `#${id}`;
+            link.textContent = heading.textContent;
+
+            // 添加平滑滚动
+            link.addEventListener('click', smoothScroll);
+
+            listItem.appendChild(link);
+            tocList.appendChild(listItem);
+        });
+    }
+
+    // 2. 平滑滚动函数
+    function smoothScroll(event) {
+        event.preventDefault();
+        const targetId = event.target.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+
+        if (targetElement) {
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    }
+
+    // 3. 切换目录显示/隐藏
+    function toggleToc() {
+        const tocContainer = document.querySelector('.toc-container');
+        tocContainer.classList.toggle('open');
+    }
+
+    // 4. 监听页面滚动，更新活动目录项
+    function updateActiveTocItem() {
+        const headings = document.querySelectorAll('.container h2');
+        const tocLinks = document.querySelectorAll('.toc-link');
+        let currentActiveIndex = -1;
+
+        // 找出当前滚动到的章节
+        for (let i = headings.length - 1; i >= 0; i--) {
+            if (window.pageYOffset >= headings[i].offsetTop - 100) {
+                currentActiveIndex = i;
+                break;
+            }
+        }
+
+        // 更新目录项的活动状态
+        tocLinks.forEach((link, index) => {
+            if (index === currentActiveIndex) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+        generateToc();
+        updateActiveTocItem(); // 初始加载时也更新一次
+
+        // 监听滚动事件
+        window.addEventListener('scroll', updateActiveTocItem);
+    });
+    </script>
 </body>
 </html>
