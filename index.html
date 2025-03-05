@@ -10,30 +10,16 @@
         /* 引入 Noto Sans SC 字体 */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100..900&display=swap');
 
-        /* 使用 Noto Sans SC 的 CSS 类示例 */
-        .noto-sans-sc {
-            font-family: "Noto Sans SC", sans-serif;
-            font-optical-sizing: auto;
-            font-weight: 400; /* 默认字重 */
-            font-style: normal;
-        }
-        .noto-sans-sc-bold {
-            font-family: "Noto Sans SC", sans-serif;
-            font-optical-sizing: auto;
-            font-weight: 700; /* 加粗 */
-            font-style: normal;
-        }
-
         body {
-            font-family: "Noto Sans SC", sans-serif; /* 全局使用 Noto Sans SC */
+            font-family: "Noto Sans SC", sans-serif;
             line-height: 1.6;
             margin: 0;
-            padding: 2%; /* 上下左右 2% 留白 */
+            padding: 2%;
             background-color: #fcefed;
             color: #6b4752;
         }
-        /* 其余的CSS保持不变 */
-                h1, h2, h3, h4, h5, h6 {
+
+        h1, h2, h3, h4, h5, h6 {
             color: #d1495b;
             margin-top: 1.5em;
             margin-bottom: 0.5em;
@@ -73,19 +59,16 @@
             border-radius: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             position: relative;
-            transition: margin-left 0.3s ease; /* 移动端过渡 */
+            /* 移除 transition */
         }
 
         /* 移动端适配 */
         @media (max-width: 768px) {
             .container {
                 padding-top: 20px;
-                transition: margin-left 0.3s ease, padding-top 0.3s ease;
+                /* 移除 transition */
             }
-            .container.toc-open {
-                margin-left: 250px;
-                /*padding-top: 60px;  移动端展开时，内容下移 */
-            }
+            /* 移除 .container.toc-open */
         }
 
         .version-info {
@@ -171,7 +154,7 @@
             color: #6b4752;
             display: block;
             padding: 5px;
-            border-radius: 8px; /* 目录项圆角 */
+            border-radius: 8px;
             transition: background-color 0.2s ease;
         }
 
@@ -193,12 +176,7 @@
             margin-left: 1em;
         }
 
-        .section-anchor {
-            display: block;
-            position: relative;
-            top: -80px;
-            visibility: hidden;
-        }
+        /* 移除 .section-anchor */
 
         /* 目录切换按钮 */
         .toc-toggle {
@@ -214,7 +192,7 @@
             border-radius: 50%;
             padding: 0;
             cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.3s ease, left 0.3s ease; /* 添加 left 过渡 */
+            transition: background-color 0.2s ease, transform 0.3s ease, left 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -226,7 +204,7 @@
         @media (min-width: 769px){
             .toc-toggle{
                 left: calc(250px + 20px);
-                transform: translateX(-100%);/* 初始隐藏在侧边栏右侧 */
+                transform: translateX(-100%);
             }
             /* 展开时，按钮向左移动 */
             .toc-container:not(.collapsed) + .toc-toggle {
@@ -276,7 +254,7 @@
             top: 6px;
         }
 
-        /* 展开状态下的图标 (X) - 使用 .toc-toggle-open */
+        /* 展开状态下的图标 (X) */
         .toc-toggle-open .toc-toggle-icon {
             background-color: transparent;
         }
@@ -291,163 +269,168 @@
             top: 0;
         }
     </style>
-    <!-- 引入 marked.js -->
+    <!-- 引入 marked.js 和 Vue 3 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
 <body>
-    <!-- 目录切换按钮 -->
-    <button class="toc-toggle" onclick="toggleToc()">
-        <span class="toc-toggle-icon"></span>
-    </button>
+    <div id="app">
+        <!-- 目录切换按钮 -->
+        <button class="toc-toggle" @click="toggleToc">
+            <span class="toc-toggle-icon" :class="{'toc-toggle-open': isTocOpen}"></span>
+        </button>
 
-    <!-- 目录容器 -->
-    <div class="toc-container" id="toc-container">
-        <div class="toc-title">目录</div>
-        <ul class="toc-list"></ul>
-    </div>
+        <!-- 目录容器 -->
+        <div class="toc-container" :class="{'collapsed': !isTocOpen && isDesktop, 'toc-open': isTocOpen && !isDesktop}">
+            <div class="toc-title">目录</div>
+            <ul class="toc-list">
+                <li v-for="(item, index) in toc" :key="index" class="toc-item" :class="item.level === 2 ? 'toc-item-chapter' : 'toc-item-section'">
+                    <a :href="'#' + item.id" class="toc-link" :class="{active: activeSection === item.id}" @click.prevent="scrollToSection(item.id, $event)">{{ item.text }}</a>
+                </li>
+            </ul>
+        </div>
 
-    <div class="container" id="content">
-        <!-- Markdown 内容将在这里渲染 -->
+        <div class="container">
+             <!-- Markdown 内容 -->
+            <div v-html="renderedMarkdown"></div>
+        </div>
     </div>
 
     <script>
-        let isTocOpen; // 全局变量，跟踪目录状态
+        const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
 
-        // 1.  读取 text.md 文件并渲染 Markdown (使用 async/await)
-        async function loadAndRenderMarkdown() {
-            try {
-                const response = await fetch('text.md');
-                const text = await response.text();
-                document.getElementById('content').innerHTML = marked.parse(text);
+        createApp({
+            setup() {
+                const markdownContent = ref('');
+                const toc = ref([]);
+                const isTocOpen = ref(window.innerWidth > 768);
+                const activeSection = ref('');
+                const isDesktop = ref(window.innerWidth > 768);
+                const headerHeight = ref(0); // 新增：标题栏高度
 
-                // 现在 Markdown 内容已经渲染完成，可以生成目录和更新活动项了
-                generateToc();
-                updateActiveTocItem();
-
-                // 初始化 isTocOpen 和按钮状态
-                isTocOpen = window.innerWidth > 768; // 桌面端默认展开，移动端默认隐藏
-                updateToggleButton();
-                // updateButtonPosition(); // 不需要了
-
-            } catch (error) {
-                console.error('Error fetching or rendering Markdown:', error);
-                document.getElementById('content').innerHTML = '<p>Error loading content.</p>';
-            }
-        }
-
-        // 2. 动态生成目录 (与之前相同)
-        function generateToc() {
-            const tocList = document.querySelector('.toc-list');
-            tocList.innerHTML = ''; // 清空
-            const headings = document.querySelectorAll('.container h2, .container h3, .container h4'); // 选择 h2, h3, h4
-
-            headings.forEach((heading, index) => {
-                const id = `section${index + 1}`;
-                heading.id = id;
-
-                const listItem = document.createElement('li');
-                listItem.classList.add('toc-item');
-
-                // 根据标题级别添加不同的 CSS 类
-                if (heading.tagName === 'H2') {
-                    listItem.classList.add('toc-item-chapter');
-                } else if (heading.tagName === 'H3') {
-                    listItem.classList.add('toc-item-section');
-                }
-
-                const link = document.createElement('a');
-                link.classList.add('toc-link');
-                link.href = `#${id}`;
-                link.textContent = heading.textContent;
-                link.addEventListener('click', smoothScroll);
-
-                listItem.appendChild(link);
-                tocList.appendChild(listItem);
-            });
-        }
-
-        // 3. 平滑滚动 (与之前相同)
-        function smoothScroll(event) {
-            event.preventDefault();
-            const targetId = event.target.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-
-            if (targetElement) {
-                targetElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
+                const renderedMarkdown = computed(() => {
+                    return marked.parse(markdownContent.value);
                 });
-            }
-        }
 
-        // 4. 切换目录显示/隐藏
-        function toggleToc() {
-            const tocContainer = document.getElementById('toc-container');
-            const container = document.querySelector('.container');
+                const fetchMarkdown = async () => {
+                    try {
+                        const response = await fetch('text.md');
+                        markdownContent.value = await response.text();
+                        // generateToc(); // 移动到 nextTick 中
+                        // updateActiveSection(); // 移动到 nextTick 中
+                    } catch (error) {
+                        console.error('Error fetching Markdown:', error);
+                        markdownContent.value = 'Error loading content.';
+                    }
+                };
 
-            // 更新 isTocOpen 状态
-            isTocOpen = !isTocOpen;
+                const generateToc = () => {
+                  const headings = document.querySelectorAll('#app .container h2, #app .container h3, #app .container h4');
+                  const newToc = [];
+                  headings.forEach((heading, index) => {
+                      const id = `section${index + 1}`;
+                      heading.id = id;  // 确保 heading 有 id
+                      newToc.push({
+                          id: id,
+                          text: heading.textContent,
+                          level: parseInt(heading.tagName.substring(1)),
+                          element: heading // 新增：存储 DOM 元素
+                      });
+                  });
+                  toc.value = newToc;
+              };
 
-            // 更新按钮图标
-            updateToggleButton();
+                const toggleToc = () => {
+                    isTocOpen.value = !isTocOpen.value;
+                };
 
-            // 桌面端：切换 .collapsed 类 (目录折叠)
-            if (window.innerWidth > 768) {
-                tocContainer.classList.toggle('collapsed');
-            } else {
-                // 移动端：切换 .toc-open 类 (目录和内容区域)
-                tocContainer.classList.toggle('toc-open');
-                container.classList.toggle('toc-open');
-            }
+              const scrollToSection = (id, event) => {
+                const target = toc.value.find(item => item.id === id);
+                if (!target || !target.element) return;
 
-            //  updateButtonPosition(); // 不需要了
-        }
-
-        // 5. 更新活动目录项 (与之前相同)
-        function updateActiveTocItem() {
-            const headings = document.querySelectorAll('.container h2, .container h3, .container h4');
-            const tocLinks = document.querySelectorAll('.toc-link');
-            let currentActiveIndex = -1;
-
-            for (let i = headings.length - 1; i >= 0; i--) {
-                if (window.pageYOffset >= headings[i].offsetTop - 100) {
-                    currentActiveIndex = i;
-                    break;
-                }
-            }
-
-            tocLinks.forEach((link, index) => {
-                if (index === currentActiveIndex) {
-                    link.classList.add('active');
+                if (isDesktop.value) {
+                    // 桌面端：使用 scrollIntoView
+                    target.element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 } else {
-                    link.classList.remove('active');
+                    // 移动端：手动计算滚动位置
+                    const targetTop = target.element.offsetTop;
+                    const adjustedTop = targetTop - headerHeight.value; // 减去标题栏高度
+
+                    window.scrollTo({
+                        top: adjustedTop,
+                        behavior: 'smooth'
+                    });
+
+                    isTocOpen.value = false; // 移动端点击后关闭目录
                 }
-            });
-        }
+            };
 
-        // 辅助函数：更新按钮图标
-        function updateToggleButton() {
-            const tocToggle = document.querySelector('.toc-toggle');
-            if (isTocOpen) {
-                tocToggle.classList.add('toc-toggle-open');
-            } else {
-                tocToggle.classList.remove('toc-toggle-open');
+                const updateActiveSection = () => {
+                    const headings = document.querySelectorAll('#app .container h2, #app .container h3, #app .container h4');
+                    let currentActiveIndex = -1;
+
+                    for (let i = headings.length - 1; i >= 0; i--) {
+                        // 移动端和桌面端都减去 headerHeight.value
+                        if (window.pageYOffset >= headings[i].offsetTop - headerHeight.value) {
+                            currentActiveIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (currentActiveIndex !== -1) {
+                        activeSection.value = `section${currentActiveIndex + 1}`;
+                    }
+                };
+
+                const handleResize = () => {
+                    isDesktop.value = window.innerWidth > 768;
+                    if(isDesktop.value){
+                        isTocOpen.value = true;
+                    }
+                    // 重新计算标题栏高度
+                    calculateHeaderHeight();
+                };
+
+                // 新增：计算标题栏高度
+                const calculateHeaderHeight = () => {
+                    const header = document.querySelector('.toc-toggle'); // 假设按钮就是标题栏
+                    if (header) {
+                        headerHeight.value = header.offsetHeight + 20; // 按钮高度 + 20px margin
+                    }
+                };
+
+                const updateFavicon = (isFocused) => {
+                    const icon = isFocused ? '●' : '○';
+                    document.querySelector('link[rel="icon"]').href = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${icon}</text></svg>`;
+                };
+
+                watch(renderedMarkdown, () => {
+                    nextTick(() => {
+                        generateToc();
+                        updateActiveSection();
+                    });
+                });
+
+                onMounted(() => {
+                    fetchMarkdown();
+                    calculateHeaderHeight(); // 初始化时计算标题栏高度
+                    window.addEventListener('scroll', updateActiveSection);
+                    window.addEventListener('resize', handleResize);
+                    window.addEventListener('focus', () => updateFavicon(true));
+                    window.addEventListener('blur', () => updateFavicon(false));
+                });
+
+                return {
+                    renderedMarkdown,
+                    toc,
+                    isTocOpen,
+                    activeSection,
+                    isDesktop,
+                    toggleToc,
+                    scrollToSection
+                };
             }
-        }
-
-        // 监听 focus 和 blur 事件，更新 favicon
-        window.addEventListener('focus', () => {
-            document.querySelector('link[rel="icon"]').href = "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>●</text></svg>";
-        });
-
-        window.addEventListener('blur', () => {
-            document.querySelector('link[rel="icon"]').href = "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>○</text></svg>";
-        });
-
-        // 调用加载和渲染 Markdown 的函数
-        loadAndRenderMarkdown();
-        // 监听滚动事件
-        window.addEventListener('scroll', updateActiveTocItem);
+        }).mount('#app');
     </script>
 </body>
 </html>
