@@ -62,7 +62,7 @@
             position: relative;
         }
 
-        /* 目录容器 */
+        /* 目录容器样式 */
         .toc-container {
             position: fixed;
             top: 0;
@@ -83,7 +83,7 @@
             border-bottom-right-radius: 10px;
         }
 
-        /* 渐变边框 (使用伪元素模拟) */
+        /* 渐变边框 (使用伪元素) */
         .toc-container::after {
             content: '';
             position: absolute;
@@ -174,7 +174,7 @@
             margin-left: 1em;
         }
 
-        /* 目录切换按钮 */
+        /* 目录切换按钮样式 */
         .toc-toggle {
             position: fixed;
             top: 5vh;
@@ -295,7 +295,7 @@
     <script>
         const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
 
-        // 防抖函数
+        // 防抖函数：在一定时间内只执行最后一次操作
         function debounce(func, wait) {
             let timeout;
             return function(...args) {
@@ -305,7 +305,7 @@
             };
         }
 
-        // 节流函数
+        // 节流函数：在一定时间内只执行一次操作
         function throttle(func, limit) {
             let inThrottle;
             return function(...args) {
@@ -318,27 +318,29 @@
             };
         }
 
-        // 生成唯一 ID 的函数
+        // 生成唯一 ID
         function generateUniqueId(prefix) {
             return `${prefix}-${Math.random().toString(36).substring(2, 15)}`;
         }
 
         createApp({
             setup() {
-                const markdownContent = ref('');
-                const toc = ref([]);
-                const isTocOpen = ref(window.innerWidth > 768);
-                const activeSection = ref('');
-                const isDesktop = ref(window.innerWidth > 768);
-                const headerHeight = ref(0); // 未使用，但逻辑相关，暂时保留
-                const isLoading = ref(false);
-                const tocContainer = ref(null);
-                const isButtonClicked = ref(false); // 按钮是否被点击
+                const markdownContent = ref(''); // Markdown 文件内容
+                const toc = ref([]); // 目录数据
+                const isTocOpen = ref(window.innerWidth > 768); // 目录是否打开 (默认在桌面端打开)
+                const activeSection = ref(''); // 当前激活的章节 ID
+                const isDesktop = ref(window.innerWidth > 768); // 是否为桌面端
+                const headerHeight = ref(0); // 头部高度, 此处未使用，但原逻辑保留
+                const isLoading = ref(false); // 是否正在加载 Markdown 文件
+                const tocContainer = ref(null); // 目录容器的 DOM 引用
+                const isButtonClicked = ref(false); // 目录切换按钮是否被点击
 
+                // 计算属性：将 Markdown 文本转换为 HTML
                 const renderedMarkdown = computed(() => {
                     return marked.parse(markdownContent.value);
                 });
 
+                // 获取 Markdown 文件内容
                 const fetchMarkdown = async () => {
                     isLoading.value = true;
                     try {
@@ -352,62 +354,64 @@
                     }
                 };
 
+                // 生成目录
                 const generateToc = () => {
                     const headings = document.querySelectorAll('#app .container h2, #app .container h3, #app .container h4');
                     const newToc = [];
-                    const idMap = new Map(); // 用于检测重复 ID
+                    const idMap = new Map(); // 用于检测并处理重复的 ID
 
                     headings.forEach((heading) => {
                         let id = heading.textContent.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
-                         // 检查 ID 是否重复，如果重复则添加后缀
+                         // 检查 ID 是否重复，如果重复则添加数字后缀
                         let suffix = 1;
                         let originalId = id;
                         while (idMap.has(id)) {
                             id = `${originalId}-${suffix}`;
                             suffix++;
                         }
-                        idMap.set(id, true);
+                        idMap.set(id, true); // 将处理后的 ID 存入 Map
 
                         heading.id = id;
                         newToc.push({
                             id: id,
                             text: heading.textContent,
                             level: parseInt(heading.tagName.substring(1)),
-                            element: heading
+                            element: heading // 保存 heading 元素的引用
                         });
                     });
                     toc.value = newToc;
                 };
 
+                // 切换目录的显示/隐藏
                 const toggleToc = () => {
                     isTocOpen.value = !isTocOpen.value;
 
-                    // 按钮点击动画
+                    // 目录切换按钮点击动画
                     isButtonClicked.value = true;
                     setTimeout(() => {
                         isButtonClicked.value = false;
                     }, 300); // 动画持续时间
 
-                    // 目录状态改变时，更新按钮位置
+                    // 桌面端目录状态改变时，更新按钮位置
                     if (isDesktop.value) {
                         nextTick(updateToggleButtonPosition);
                     }
                 };
 
+                // 滚动到指定的章节
                 const scrollToSection = (id) => {
                     const target = toc.value.find(item => item.id === id);
                     if (!target || !target.element) return;
 
                     const targetTop = target.element.offsetTop;
-                    // const adjustedTop = targetTop - headerHeight.value; // 不再需要 headerHeight
-                    const adjustedTop = targetTop; // 直接使用 targetTop
+                    const adjustedTop = targetTop; // 直接使用offsetTop
 
                     window.scrollTo({
                         top: adjustedTop,
                         behavior: 'smooth'
                     });
 
-                    // 移动端点击后延迟关闭目录
+                    // 如果是移动端，点击目录项后延迟关闭目录
                     if (!isDesktop.value) {
                         setTimeout(() => {
                             isTocOpen.value = false;
@@ -415,12 +419,14 @@
                     }
                 };
 
+                // 更新当前激活的章节 ID
                 const updateActiveSection = () => {
                     const headings = document.querySelectorAll('#app .container h2, #app .container h3, #app .container h4');
                     let currentActiveIndex = -1;
 
+                    // 从后往前遍历标题，找到第一个在视口上方的标题
                     for (let i = headings.length - 1; i >= 0; i--) {
-                        if (window.pageYOffset >= headings[i].offsetTop) { // 简化条件
+                        if (window.pageYOffset >= headings[i].offsetTop) {
                             currentActiveIndex = i;
                             break;
                         }
@@ -431,33 +437,28 @@
                     }
                 };
 
+                // 处理窗口大小变化
                 const handleResize = () => {
                     isDesktop.value = window.innerWidth > 768;
                     if (isDesktop.value) {
-                        isTocOpen.value = true;
+                        isTocOpen.value = true; // 桌面端默认打开目录
                     }
-                    // calculateHeaderHeight(); // 不再需要
                     // 窗口大小改变时，更新按钮位置
                     updateToggleButtonPosition();
                 };
 
-                // const calculateHeaderHeight = () => { // 不再需要此函数
-                //     const header = document.querySelector('.toc-toggle');
-                //     if (header) {
-                //         headerHeight.value = header.offsetHeight + 20;
-                //     }
-                // };
-
+                // 更新 favicon
                 const updateFavicon = (isFocused) => {
-                    const icon = isFocused ? '●' : '○';
+                    const icon = isFocused ? '●' : '○'; // 页面获得焦点时为实心圆，失去焦点时为空心圆
                     document.querySelector('link[rel="icon"]').href = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${icon}</text></svg>`;
                 };
 
-                // 点击目录外部自动关闭目录
+                // 点击目录外部时，如果是移动端且目录打开，则关闭目录
                 const handleOutsideClick = (event) => {
                     if (!isDesktop.value && isTocOpen.value) {
                         const tocElement = tocContainer.value;
                         const toggleBtn = document.querySelector('.toc-toggle');
+                        // 检查点击事件是否发生在目录容器或切换按钮之外
                         if (tocElement && !tocElement.contains(event.target) && !toggleBtn.contains(event.target))
                          {
                             isTocOpen.value = false;
@@ -465,7 +466,7 @@
                     }
                 };
 
-                // 更新按钮位置的函数
+                // 更新目录切换按钮的位置
                 const updateToggleButtonPosition = () => {
                     if (isDesktop.value) {
                         const tocElement = tocContainer.value;
@@ -482,26 +483,29 @@
                     }
                 };
 
+                // 监听 renderedMarkdown 变化，更新目录和当前激活章节
                 watch(renderedMarkdown, () => {
-                    nextTick(() => {
+                    nextTick(() => { // 在 DOM 更新后执行
                         generateToc();
                         updateActiveSection();
                     });
                 });
 
+                // 组件挂载后
                 onMounted(() => {
-                    fetchMarkdown();
-                    // calculateHeaderHeight(); // 不再需要
-                    tocContainer.value = document.querySelector('.toc-container');
-                    window.addEventListener('scroll', debounce(updateActiveSection, 200));
-                    window.addEventListener('resize', throttle(handleResize, 300));
-                    window.addEventListener('focus', () => updateFavicon(true));
-                    window.addEventListener('blur', () => updateFavicon(false));
-                    document.addEventListener('click', handleOutsideClick);
+                    fetchMarkdown(); // 获取 Markdown 内容
+                    tocContainer.value = document.querySelector('.toc-container'); // 获取目录容器的 DOM 引用
 
-                    // 使用 window.onload 确保所有资源加载完毕
+                    // 添加事件监听器
+                    window.addEventListener('scroll', debounce(updateActiveSection, 200)); // 滚动事件 (防抖)
+                    window.addEventListener('resize', throttle(handleResize, 300)); // 窗口大小变化事件 (节流)
+                    window.addEventListener('focus', () => updateFavicon(true)); // 窗口获得焦点
+                    window.addEventListener('blur', () => updateFavicon(false)); // 窗口失去焦点
+                    document.addEventListener('click', handleOutsideClick); // 点击事件，用于处理目录外部点击
+
+                    // 使用 window.onload 确保所有资源（包括图片）加载完毕
                     window.onload = () => {
-                        updateToggleButtonPosition();
+                        updateToggleButtonPosition(); // 更新按钮位置
                     };
                 });
 
@@ -514,7 +518,7 @@
                     isLoading,
                     toggleToc,
                     scrollToSection,
-                    isButtonClicked // 暴露给模板
+                    isButtonClicked // 返回给模板的数据和方法
                 };
             }
         }).mount('#app');
