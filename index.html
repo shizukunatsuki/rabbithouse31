@@ -10,18 +10,34 @@
         /* 引入 Noto Sans SC 字体 */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100..900&display=swap');
 
+        :root {
+            --primary-color: #6b4752;
+            --secondary-color: #d1495b;
+            --accent-color: #f08080;
+            --bg-color: #fcefed;
+            --container-bg-color: #fff;
+            --toc-bg-color: #f8e2e7;
+            --toc-hover-bg-color: #f9d7dd;
+            --toc-border-color: linear-gradient(to bottom, var(--accent-color), var(--toc-bg-color));
+            --button-bg-color: var(--accent-color);
+            --button-hover-bg-color: #e67373;
+            --button-text-color: #fff;
+            --box-shadow-color: rgba(0, 0, 0, 0.1);
+            --box-shadow: 0 2px 5px var(--box-shadow-color);
+        }
+
         body {
             font-family: "Noto Sans SC", sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 2%;
-            background-color: #fcefed;
-            color: #6b4752;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
             -webkit-tap-highlight-color: transparent; /* 禁用移动端点击高亮 */
         }
 
         h1, h2, h3, h4, h5, h6 {
-            color: #d1495b;
+            color: var(--secondary-color);
             margin-top: 1.5em;
             margin-bottom: 0.5em;
             line-height: 1.2;
@@ -30,7 +46,7 @@
         h1 {
             font-size: 2em;
             text-align: center;
-            border-bottom: 2px solid #f08080;
+            border-bottom: 2px solid var(--accent-color);
             padding-bottom: 0.5em;
             margin-bottom: 1em;
         }
@@ -39,9 +55,7 @@
         h3 { font-size: 1.2em; }
         h4 { font-size: 1.1em; }
 
-        p {
-            margin-bottom: 1em;
-        }
+        p { margin-bottom: 1em; }
 
         ol, ul {
             margin-top: 0;
@@ -55,10 +69,10 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background-color: #fff;
+            background-color: var(--container-bg-color);
             padding: 20px;
             border-radius: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--box-shadow);
             position: relative;
         }
 
@@ -67,18 +81,16 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: auto; /* 自适应宽度 */
-            max-width: 250px; /* 桌面端最大宽度 */
+            width: auto;
+            max-width: 250px;
             height: 100%;
-            background-color: #f8e2e7;
+            background-color: var(--toc-bg-color);
             padding: 20px;
             transition: transform 0.3s ease;
             overflow-y: auto;
             z-index: 1000;
             transform: translateX(0);
-            /* 添加阴影 */
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            /* 添加圆角 */
+            box-shadow: 2px 0 5px var(--box-shadow-color);
             border-top-right-radius: 10px;
             border-bottom-right-radius: 10px;
         }
@@ -88,53 +100,43 @@
             content: '';
             position: absolute;
             top: 0;
-            right: -2px; /* 略微超出，避免缝隙 */
-            width: 2px; /* 边框宽度 */
+            right: -2px;
+            width: 2px;
             height: 100%;
-            background: linear-gradient(to bottom, #f08080, #f8e2e7);
-            border-top-right-radius: 10px; /* 与 .toc-container 相同 */
+            background: var(--toc-border-color);
+            border-top-right-radius: 10px;
             border-bottom-right-radius: 10px;
         }
 
         /* 隐藏滚动条 */
-        .toc-container::-webkit-scrollbar {
-            width: 0;
-        }
+        .toc-container::-webkit-scrollbar { width: 0; }
         .toc-container {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
 
         /* PC 端折叠状态 */
-        .toc-container.collapsed {
-            transform: translateX(-100%);
-        }
+        .toc-container.collapsed { transform: translateX(-100%); }
 
-        /* 移动端最大宽度 */
+        /* 移动端最大宽度和展开状态 */
         @media (max-width: 768px) {
             .toc-container {
-                max-width: 66.66vw; /* 移动端最大宽度 */
+                max-width: 66.66vw;
                 transform: translateX(-100%);
             }
-            .toc-container.toc-open {
-                transform: translateX(0);
-            }
-            /* 为按钮留出空间 */
-            .toc-title {
-                padding-top: calc(5vh + 40px + 10px); /* 5% + 按钮高度 + 间距 */
-            }
+            .toc-container.toc-open { transform: translateX(0); }
+            .toc-title { padding-top: calc(5vh + 40px + 10px); }
         }
+
         /* PC 端最大宽度 */
         @media (min-width: 769px){
-            .toc-container{
-                max-width: 33.33vw;
-            }
+            .toc-container{ max-width: 33.33vw; }
         }
 
         .toc-title {
             font-weight: bold;
             margin-bottom: 10px;
-            color: #d1495b;
+            color: var(--secondary-color);
         }
 
         .toc-list {
@@ -143,25 +145,19 @@
             margin: 0;
         }
 
-        .toc-item {
-            margin-bottom: 5px;
-        }
+        .toc-item { margin-bottom: 5px; }
 
         .toc-link {
             text-decoration: none;
-            color: #6b4752;
+            color: var(--primary-color);
             display: block;
             padding: 5px;
             border-radius: 8px;
             transition: background-color 0.2s ease;
         }
 
-        .toc-link:hover,
-        .toc-link.active {
-            background-color: #f9d7dd;
-        }
+        .toc-link:hover, .toc-link.active { background-color: var(--toc-hover-bg-color); }
 
-        /* 章节样式 */
         .toc-item-chapter {
             font-size: 1.2em;
             font-weight: bold;
@@ -169,35 +165,31 @@
             margin-bottom: 5px;
         }
 
-        /* 条目样式 */
-        .toc-item-section {
-            margin-left: 1em;
-        }
+        .toc-item-section { margin-left: 1em; }
 
         /* 目录切换按钮样式 */
         .toc-toggle {
             position: fixed;
             top: 5vh;
             z-index: 1001;
-            background-color: #f08080;
-            color: #fff;
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
             border: none;
             width: 40px;
             height: 40px;
             border-radius: 50%;
             padding: 0;
             cursor: pointer;
-            /* 添加过渡效果 */
             transition: background-color 0.2s ease, left 0.3s ease, transform 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--box-shadow);
             transform: translateY(-50%);
         }
 
-        /* 移动端按钮定位, 与边缘保持 5% 距离 */
+        /* 移动端按钮定位 */
         @media (max-width: 768px) {
             .toc-toggle{
                 top: 5vh;
@@ -206,22 +198,17 @@
             }
         }
 
-        .toc-toggle:hover {
-            background-color: #e67373;
-        }
-
-        .toc-toggle:focus {
-            outline: none;
-        }
+        .toc-toggle:hover { background-color: var(--button-hover-bg-color); }
+        .toc-toggle:focus { outline: none; }
 
         /* 菜单图标 */
         .toc-toggle-icon {
             width: 20px;
             height: 2px;
-            background-color: #fff;
+            background-color: var(--button-text-color);
             display: block;
             position: relative;
-            transition: transform 0.3s ease; /* 添加过渡效果 */
+            transition: transform 0.3s ease;
         }
 
         .toc-toggle-icon::before,
@@ -229,44 +216,34 @@
             content: '';
             width: 20px;
             height: 2px;
-            background-color: #fff;
+            background-color: var(--button-text-color);
             display: block;
             position: absolute;
-            transition: top 0.3s ease, transform 0.3s ease; /* 添加过渡效果 */
+            transition: top 0.3s ease, transform 0.3s ease;
         }
 
-        .toc-toggle-icon::before {
-            top: -6px;
-        }
-
-        .toc-toggle-icon::after {
-            top: 6px;
-        }
+        .toc-toggle-icon::before { top: -6px; }
+        .toc-toggle-icon::after { top: 6px; }
 
         /* 展开状态的图标 (X) */
-        .toc-open .toc-toggle-icon {
-            background-color: transparent; /* 中间的横线透明 */
-        }
-
+        .toc-open .toc-toggle-icon { background-color: transparent; }
         .toc-open .toc-toggle-icon::before {
             top: 0;
             transform: rotate(45deg);
         }
-
         .toc-open .toc-toggle-icon::after {
             top: 0;
             transform: rotate(-45deg);
         }
 
         /* 点击动画 */
-        .toc-toggle.clicked {
-            transform: translateY(-50%) scale(1.2); /* 放大效果 */
-            /* 也可以添加其他动画效果，比如旋转 */
-        }
+        .toc-toggle.clicked { transform: translateY(-50%) scale(1.2); }
     </style>
     <!-- 引入 marked.js 和 Vue 3 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+     <!-- 引入 lodash -->
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -276,7 +253,7 @@
         </button>
 
         <!-- 目录容器 -->
-        <div class="toc-container" :class="{'collapsed': !isTocOpen && isDesktop, 'toc-open': isTocOpen && !isDesktop}">
+        <div class="toc-container" :class="{'collapsed': !isTocOpen && isDesktop, 'toc-open': isTocOpen && !isDesktop}" ref="tocContainerRef">
             <div class="toc-title">目录</div>
             <ul class="toc-list">
                 <li v-for="(item, index) in toc" :key="item.id" class="toc-item" :class="item.level === 2 ? 'toc-item-chapter' : 'toc-item-section'">
@@ -295,217 +272,171 @@
     <script>
         const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
 
-        // 防抖函数：在一定时间内只执行最后一次操作
-        function debounce(func, wait) {
-            let timeout;
-            return function(...args) {
-                const context = this;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(context, args), wait);
-            };
-        }
-
-        // 节流函数：在一定时间内只执行一次操作
-        function throttle(func, limit) {
-            let inThrottle;
-            return function(...args) {
-                const context = this;
-                if (!inThrottle) {
-                    func.apply(context, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
-        }
-
-        // 生成唯一 ID
-        function generateUniqueId(prefix) {
-            return `${prefix}-${Math.random().toString(36).substring(2, 15)}`;
+        // 生成 favicon URL
+        function getFaviconUrl(icon) {
+            return `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${icon}</text></svg>`;
         }
 
         createApp({
             setup() {
-                const markdownContent = ref(''); // Markdown 文件内容
-                const toc = ref([]); // 目录数据
-                const isTocOpen = ref(window.innerWidth > 768); // 目录是否打开 (默认在桌面端打开)
-                const activeSection = ref(''); // 当前激活的章节 ID
-                const isDesktop = ref(window.innerWidth > 768); // 是否为桌面端
-                const headerHeight = ref(0); // 头部高度, 此处未使用，但原逻辑保留
-                const isLoading = ref(false); // 是否正在加载 Markdown 文件
-                const tocContainer = ref(null); // 目录容器的 DOM 引用
-                const isButtonClicked = ref(false); // 目录切换按钮是否被点击
+                const markdownContent = ref('');
+                const toc = ref([]);
+                const isTocOpen = ref(window.innerWidth > 768);
+                const activeSection = ref('');
+                const isDesktop = ref(window.innerWidth > 768);
+                const isLoading = ref(false);
+                const tocContainerRef = ref(null); // 目录容器的 DOM 引用
+                const toggleButton = ref(null); // 目录切换按钮的 DOM 引用
+                const isButtonClicked = ref(false);
+                const headingObserver = ref(null); // IntersectionObserver 实例
 
-                // 计算属性：将 Markdown 文本转换为 HTML
+
                 const renderedMarkdown = computed(() => {
                     return marked.parse(markdownContent.value);
                 });
 
-                // 获取 Markdown 文件内容
                 const fetchMarkdown = async () => {
                     isLoading.value = true;
                     try {
                         const response = await fetch('text.md');
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
                         markdownContent.value = await response.text();
                     } catch (error) {
                         console.error('Error fetching Markdown:', error);
-                        markdownContent.value = 'Error loading content.';
+                        markdownContent.value = `Error loading content. ${error.message}`;
                     } finally {
                         isLoading.value = false;
                     }
                 };
 
-                // 生成目录
+               // 生成目录 (整合 ID 生成逻辑)
                 const generateToc = () => {
                     const headings = document.querySelectorAll('#app .container h2, #app .container h3, #app .container h4');
                     const newToc = [];
-                    const idMap = new Map(); // 用于检测并处理重复的 ID
+                    const idMap = new Map();
 
                     headings.forEach((heading) => {
                         let id = heading.textContent.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
-                         // 检查 ID 是否重复，如果重复则添加数字后缀
                         let suffix = 1;
                         let originalId = id;
                         while (idMap.has(id)) {
                             id = `${originalId}-${suffix}`;
                             suffix++;
                         }
-                        idMap.set(id, true); // 将处理后的 ID 存入 Map
+                        idMap.set(id, true);
 
                         heading.id = id;
                         newToc.push({
                             id: id,
                             text: heading.textContent,
                             level: parseInt(heading.tagName.substring(1)),
-                            element: heading // 保存 heading 元素的引用
+                            element: heading
                         });
                     });
                     toc.value = newToc;
                 };
 
-                // 切换目录的显示/隐藏
                 const toggleToc = () => {
                     isTocOpen.value = !isTocOpen.value;
-
-                    // 目录切换按钮点击动画
                     isButtonClicked.value = true;
                     setTimeout(() => {
                         isButtonClicked.value = false;
-                    }, 300); // 动画持续时间
-
-                    // 桌面端目录状态改变时，更新按钮位置
+                    }, 300);
                     if (isDesktop.value) {
                         nextTick(updateToggleButtonPosition);
                     }
                 };
 
-                // 滚动到指定的章节
                 const scrollToSection = (id) => {
                     const target = toc.value.find(item => item.id === id);
                     if (!target || !target.element) return;
 
                     const targetTop = target.element.offsetTop;
-                    const adjustedTop = targetTop; // 直接使用offsetTop
+                    const adjustedTop = targetTop;
 
                     window.scrollTo({
                         top: adjustedTop,
                         behavior: 'smooth'
                     });
 
-                    // 如果是移动端，点击目录项后延迟关闭目录
                     if (!isDesktop.value) {
                         setTimeout(() => {
                             isTocOpen.value = false;
-                        }, 300); // 延迟 300ms
+                        }, 300);
                     }
                 };
 
-                // 更新当前激活的章节 ID
-                const updateActiveSection = () => {
-                    const headings = document.querySelectorAll('#app .container h2, #app .container h3, #app .container h4');
-                    let currentActiveIndex = -1;
 
-                    // 从后往前遍历标题，找到第一个在视口上方的标题
-                    for (let i = headings.length - 1; i >= 0; i--) {
-                        if (window.pageYOffset >= headings[i].offsetTop) {
-                            currentActiveIndex = i;
-                            break;
-                        }
-                    }
-
-                    if (currentActiveIndex !== -1) {
-                        activeSection.value = headings[currentActiveIndex].id;
-                    }
-                };
-
-                // 处理窗口大小变化
-                const handleResize = () => {
+                const handleResize = _.throttle(() => {
                     isDesktop.value = window.innerWidth > 768;
                     if (isDesktop.value) {
-                        isTocOpen.value = true; // 桌面端默认打开目录
+                        isTocOpen.value = true;
                     }
-                    // 窗口大小改变时，更新按钮位置
                     updateToggleButtonPosition();
-                };
+                }, 300);
 
-                // 更新 favicon
                 const updateFavicon = (isFocused) => {
-                    const icon = isFocused ? '●' : '○'; // 页面获得焦点时为实心圆，失去焦点时为空心圆
-                    document.querySelector('link[rel="icon"]').href = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${icon}</text></svg>`;
+                    const icon = isFocused ? '●' : '○';
+                    document.querySelector('link[rel="icon"]').href = getFaviconUrl(icon);
                 };
 
-                // 点击目录外部时，如果是移动端且目录打开，则关闭目录
                 const handleOutsideClick = (event) => {
                     if (!isDesktop.value && isTocOpen.value) {
-                        const tocElement = tocContainer.value;
-                        const toggleBtn = document.querySelector('.toc-toggle');
-                        // 检查点击事件是否发生在目录容器或切换按钮之外
-                        if (tocElement && !tocElement.contains(event.target) && !toggleBtn.contains(event.target))
-                         {
+                        const tocElement = tocContainerRef.value;
+                        if (tocElement && !tocElement.contains(event.target) && !toggleButton.value.contains(event.target)) {
                             isTocOpen.value = false;
                         }
                     }
                 };
 
-                // 更新目录切换按钮的位置
                 const updateToggleButtonPosition = () => {
-                    if (isDesktop.value) {
-                        const tocElement = tocContainer.value;
-                        const toggleButton = document.querySelector('.toc-toggle');
-                        if (tocElement && toggleButton) {
-                            if (!isTocOpen.value) {
-                                // 目录折叠时，按钮移动到左侧 5% 处
-                                toggleButton.style.left = '5vw';
-                            } else {
-                                // 目录展开时，按钮移动到目录右侧 + 5% 处
-                                toggleButton.style.left = `calc(${tocElement.offsetWidth}px + 5vw)`;
-                            }
+                    if (isDesktop.value && tocContainerRef.value && toggleButton.value) {
+                        if (!isTocOpen.value) {
+                            toggleButton.value.style.left = '5vw';
+                        } else {
+                            toggleButton.value.style.left = `calc(${tocContainerRef.value.offsetWidth}px + 5vw)`;
                         }
                     }
                 };
 
-                // 监听 renderedMarkdown 变化，更新目录和当前激活章节
                 watch(renderedMarkdown, () => {
-                    nextTick(() => { // 在 DOM 更新后执行
+                    nextTick(() => {
                         generateToc();
-                        updateActiveSection();
+                         // 重新观察所有标题
+                        const headings = document.querySelectorAll('#app .container h2, #app .container h3, #app .container h4');
+                        headings.forEach(heading => headingObserver.value.observe(heading));
                     });
                 });
 
-                // 组件挂载后
                 onMounted(() => {
-                    fetchMarkdown(); // 获取 Markdown 内容
-                    tocContainer.value = document.querySelector('.toc-container'); // 获取目录容器的 DOM 引用
+                    fetchMarkdown();
+                    tocContainerRef.value = document.querySelector('.toc-container');
+                    toggleButton.value = document.querySelector('.toc-toggle');
 
-                    // 添加事件监听器
-                    window.addEventListener('scroll', debounce(updateActiveSection, 200)); // 滚动事件 (防抖)
-                    window.addEventListener('resize', throttle(handleResize, 300)); // 窗口大小变化事件 (节流)
-                    window.addEventListener('focus', () => updateFavicon(true)); // 窗口获得焦点
-                    window.addEventListener('blur', () => updateFavicon(false)); // 窗口失去焦点
-                    document.addEventListener('click', handleOutsideClick); // 点击事件，用于处理目录外部点击
+                    headingObserver.value = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                activeSection.value = entry.target.id;
+                            }
+                        });
+                    }, {
+                        rootMargin: '-10% 0px -90% 0px',
+                        threshold: 0.1
+                    });
 
-                    // 使用 window.onload 确保所有资源（包括图片）加载完毕
+                    // 首次观察所有标题
+                    const headings = document.querySelectorAll('#app .container h2, #app .container h3, #app .container h4');
+                    headings.forEach(heading => headingObserver.value.observe(heading));
+
+                    window.addEventListener('resize', handleResize);
+                    window.addEventListener('focus', () => updateFavicon(true));
+                    window.addEventListener('blur', () => updateFavicon(false));
+                    document.addEventListener('click', handleOutsideClick);
+
                     window.onload = () => {
-                        updateToggleButtonPosition(); // 更新按钮位置
+                        updateToggleButtonPosition();
                     };
                 });
 
@@ -518,7 +449,8 @@
                     isLoading,
                     toggleToc,
                     scrollToSection,
-                    isButtonClicked // 返回给模板的数据和方法
+                    isButtonClicked,
+                    tocContainerRef // 暴露给模板
                 };
             }
         }).mount('#app');
