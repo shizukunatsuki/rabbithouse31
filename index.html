@@ -19,7 +19,6 @@
             color: #6b4752;
         }
 
-        /* ... (样式部分的其他代码保持不变) ... */
         h1, h2, h3, h4, h5, h6 {
             color: #d1495b;
             margin-top: 1.5em;
@@ -67,8 +66,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: auto;
-            max-width: 250px;
+            width: auto; /* 自适应宽度 */
+            max-width: 250px; /* 桌面端最大宽度 */
             height: 100%;
             background-color: #f8e2e7;
             padding: 20px;
@@ -76,43 +75,60 @@
             overflow-y: auto;
             z-index: 1000;
             transform: translateX(0);
+            /* 添加阴影 */
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            /* 添加圆角 */
             border-top-right-radius: 10px;
             border-bottom-right-radius: 10px;
         }
 
-        /* 渐变边框 */
+        /* 渐变边框 (使用伪元素模拟) */
         .toc-container::after {
             content: '';
             position: absolute;
             top: 0;
-            right: -2px;
-            width: 2px;
+            right: -2px; /* 略微超出，避免缝隙 */
+            width: 2px; /* 边框宽度 */
             height: 100%;
             background: linear-gradient(to bottom, #f08080, #f8e2e7);
-            border-top-right-radius: 10px;
+            border-top-right-radius: 10px; /* 与 .toc-container 相同 */
             border-bottom-right-radius: 10px;
         }
 
         /* 隐藏滚动条 */
-        .toc-container::-webkit-scrollbar { width: 0; }
-        .toc-container { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* PC 端折叠 */
-        .toc-container.collapsed { transform: translateX(-100%); }
-
-        /* 移动端 */
-        @media (max-width: 768px) {
-            .toc-container {
-                max-width: 66.66vw;
-                transform: translateX(-100%);
-            }
-            .toc-container.toc-open { transform: translateX(0); }
-            .toc-title { padding-top: calc(5vh + 40px + 10px); }
+        .toc-container::-webkit-scrollbar {
+            width: 0;
+        }
+        .toc-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
-        /* PC 端 */
-        @media (min-width: 769px){ .toc-container{ max-width: 33.33vw; } }
+        /* PC 端折叠状态 */
+        .toc-container.collapsed {
+            transform: translateX(-100%);
+        }
+
+        /* 移动端最大宽度 */
+        @media (max-width: 768px) {
+            .toc-container {
+                max-width: 66.66vw; /* 移动端最大宽度 */
+                transform: translateX(-100%);
+            }
+            .toc-container.toc-open {
+                transform: translateX(0);
+            }
+            /* 为按钮留出空间 */
+            .toc-title {
+                padding-top: calc(5vh + 40px + 10px); /* 5% + 按钮高度 + 间距 */
+            }
+        }
+        /* PC 端最大宽度 */
+        @media (min-width: 769px){
+            .toc-container{
+                max-width: 33.33vw;
+            }
+        }
 
         .toc-title {
             font-weight: bold;
@@ -120,8 +136,15 @@
             color: #d1495b;
         }
 
-        .toc-list { list-style: none; padding: 0; margin: 0; }
-        .toc-item { margin-bottom: 5px; }
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc-item {
+            margin-bottom: 5px;
+        }
 
         .toc-link {
             text-decoration: none;
@@ -132,9 +155,23 @@
             transition: background-color 0.2s ease;
         }
 
-        .toc-link:hover, .toc-link.active { background-color: #f9d7dd; }
-        .toc-item-chapter { font-size: 1.2em; font-weight: bold; margin-top: 10px; margin-bottom: 5px; }
-        .toc-item-section { margin-left: 1em; }
+        .toc-link:hover,
+        .toc-link.active {
+            background-color: #f9d7dd;
+        }
+
+        /* 章节样式 */
+        .toc-item-chapter {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        /* 条目样式 */
+        .toc-item-section {
+            margin-left: 1em;
+        }
 
         /* 目录切换按钮 */
         .toc-toggle {
@@ -149,6 +186,7 @@
             border-radius: 50%;
             padding: 0;
             cursor: pointer;
+            /* 添加过渡效果 */
             transition: background-color 0.2s ease, left 0.3s ease, transform 0.3s ease;
             display: flex;
             align-items: center;
@@ -158,11 +196,22 @@
             transform: translateY(-50%);
         }
 
-        /* 移动端按钮定位 */
-        @media (max-width: 768px) { .toc-toggle{ top: 5vh; left: 5vw; transform: translateY(-50%); } }
+        /* 移动端按钮定位, 与边缘保持 5% 距离 */
+        @media (max-width: 768px) {
+            .toc-toggle{
+                top: 5vh;
+                left: 5vw;
+                transform: translateY(-50%);
+            }
+        }
 
-        .toc-toggle:hover { background-color: #e67373; }
-        .toc-toggle:focus { outline: none; }
+        .toc-toggle:hover {
+            background-color: #e67373;
+        }
+
+        .toc-toggle:focus {
+            outline: none;
+        }
 
         /* 菜单图标 */
         .toc-toggle-icon {
@@ -171,29 +220,48 @@
             background-color: #fff;
             display: block;
             position: relative;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease; /* 添加过渡效果 */
         }
 
-        .toc-toggle-icon::before, .toc-toggle-icon::after {
+        .toc-toggle-icon::before,
+        .toc-toggle-icon::after {
             content: '';
             width: 20px;
             height: 2px;
             background-color: #fff;
             display: block;
             position: absolute;
-            transition: top 0.3s ease, transform 0.3s ease;
+            transition: top 0.3s ease, transform 0.3s ease; /* 添加过渡效果 */
         }
 
-        .toc-toggle-icon::before { top: -6px; }
-        .toc-toggle-icon::after { top: 6px; }
+        .toc-toggle-icon::before {
+            top: -6px;
+        }
 
-        /* 展开状态图标 (X) */
-        .toc-open .toc-toggle-icon { background-color: transparent; }
-        .toc-open .toc-toggle-icon::before { top: 0; transform: rotate(45deg); }
-        .toc-open .toc-toggle-icon::after { top: 0; transform: rotate(-45deg); }
+        .toc-toggle-icon::after {
+            top: 6px;
+        }
+
+        /* 展开状态的图标 (X) */
+        .toc-open .toc-toggle-icon {
+            background-color: transparent; /* 中间的横线透明 */
+        }
+
+        .toc-open .toc-toggle-icon::before {
+            top: 0;
+            transform: rotate(45deg);
+        }
+
+        .toc-open .toc-toggle-icon::after {
+            top: 0;
+            transform: rotate(-45deg);
+        }
 
         /* 点击动画 */
-        .toc-toggle.clicked { transform: translateY(-50%) scale(1.2); }
+        .toc-toggle.clicked {
+            transform: translateY(-50%) scale(1.2); /* 放大效果 */
+            /* 也可以添加其他动画效果，比如旋转 */
+        }
     </style>
     <!-- 引入 marked.js 和 Vue 3 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -211,7 +279,7 @@
             <div class="toc-title">目录</div>
             <ul class="toc-list">
                 <li v-for="(item, index) in toc" :key="item.id" class="toc-item" :class="item.level === 2 ? 'toc-item-chapter' : 'toc-item-section'">
-                    <a :href="'#' + item.id" class="toc-link" :class="{active: activeSection === item.id}" @click.prevent="scrollToSection(item.id)">{{ item.text }}</a>
+                    <a :href="'#' + item.id" class="toc-link" :class="{active: activeSection === item.id}" @click.prevent="scrollToSection(item.id, $event)">{{ item.text }}</a>
                 </li>
             </ul>
         </div>
@@ -226,7 +294,7 @@
     <script>
         const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
 
-        // 防抖
+        // 防抖函数
         function debounce(func, wait) {
             let timeout;
             return function(...args) {
@@ -236,7 +304,7 @@
             };
         }
 
-        // 节流
+        // 节流函数
         function throttle(func, limit) {
             let inThrottle;
             return function(...args) {
@@ -249,6 +317,11 @@
             };
         }
 
+        // 生成唯一 ID 的函数
+        function generateUniqueId(prefix) {
+            return `${prefix}-${Math.random().toString(36).substring(2, 15)}`;
+        }
+
         createApp({
             setup() {
                 const markdownContent = ref('');
@@ -256,12 +329,14 @@
                 const isTocOpen = ref(window.innerWidth > 768);
                 const activeSection = ref('');
                 const isDesktop = ref(window.innerWidth > 768);
+                const headerHeight = ref(0); // 未使用，但逻辑相关，暂时保留
                 const isLoading = ref(false);
                 const tocContainer = ref(null);
-                const isButtonClicked = ref(false);
-                const isAllLoaded = ref(false);
+                const isButtonClicked = ref(false); // 按钮是否被点击
 
-                const renderedMarkdown = computed(() => marked.parse(markdownContent.value));
+                const renderedMarkdown = computed(() => {
+                    return marked.parse(markdownContent.value);
+                });
 
                 const fetchMarkdown = async () => {
                     isLoading.value = true;
@@ -279,10 +354,11 @@
                 const generateToc = () => {
                     const headings = document.querySelectorAll('#app .container h2, #app .container h3, #app .container h4');
                     const newToc = [];
-                    const idMap = new Map();
+                    const idMap = new Map(); // 用于检测重复 ID
 
                     headings.forEach((heading) => {
                         let id = heading.textContent.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
+                         // 检查 ID 是否重复，如果重复则添加后缀
                         let suffix = 1;
                         let originalId = id;
                         while (idMap.has(id)) {
@@ -304,9 +380,17 @@
 
                 const toggleToc = () => {
                     isTocOpen.value = !isTocOpen.value;
-                    isButtonClicked.value = true; // 按钮点击动画
-                    setTimeout(() => { isButtonClicked.value = false; }, 300);
-                    if (isDesktop.value) { nextTick(updateToggleButtonPosition); } // 更新按钮位置
+
+                    // 按钮点击动画
+                    isButtonClicked.value = true;
+                    setTimeout(() => {
+                        isButtonClicked.value = false;
+                    }, 300); // 动画持续时间
+
+                    // 目录状态改变时，更新按钮位置
+                    if (isDesktop.value) {
+                        nextTick(updateToggleButtonPosition);
+                    }
                 };
 
                 const scrollToSection = (id) => {
@@ -314,9 +398,20 @@
                     if (!target || !target.element) return;
 
                     const targetTop = target.element.offsetTop;
-                    window.scrollTo({ top: targetTop, behavior: 'smooth' });
+                    // const adjustedTop = targetTop - headerHeight.value; // 不再需要 headerHeight
+                    const adjustedTop = targetTop; // 直接使用 targetTop
 
-                    if (!isDesktop.value) { setTimeout(() => { isTocOpen.value = false; }, 300); } // 移动端延迟关闭
+                    window.scrollTo({
+                        top: adjustedTop,
+                        behavior: 'smooth'
+                    });
+
+                    // 移动端点击后延迟关闭目录
+                    if (!isDesktop.value) {
+                        setTimeout(() => {
+                            isTocOpen.value = false;
+                        }, 300); // 延迟 300ms
+                    }
                 };
 
                 const updateActiveSection = () => {
@@ -324,44 +419,64 @@
                     let currentActiveIndex = -1;
 
                     for (let i = headings.length - 1; i >= 0; i--) {
-                        if (window.pageYOffset >= headings[i].offsetTop) {
+                        if (window.pageYOffset >= headings[i].offsetTop) { // 简化条件
                             currentActiveIndex = i;
                             break;
                         }
                     }
 
-                    if (currentActiveIndex !== -1) { activeSection.value = headings[currentActiveIndex].id; }
+                    if (currentActiveIndex !== -1) {
+                        activeSection.value = headings[currentActiveIndex].id;
+                    }
                 };
 
                 const handleResize = () => {
                     isDesktop.value = window.innerWidth > 768;
-                    if (isDesktop.value) { isTocOpen.value = true; }
-                    updateToggleButtonPosition(); // 更新按钮位置
+                    if (isDesktop.value) {
+                        isTocOpen.value = true;
+                    }
+                    // calculateHeaderHeight(); // 不再需要
+                    // 窗口大小改变时，更新按钮位置
+                    updateToggleButtonPosition();
                 };
+
+                // const calculateHeaderHeight = () => { // 不再需要此函数
+                //     const header = document.querySelector('.toc-toggle');
+                //     if (header) {
+                //         headerHeight.value = header.offsetHeight + 20;
+                //     }
+                // };
 
                 const updateFavicon = (isFocused) => {
                     const icon = isFocused ? '●' : '○';
                     document.querySelector('link[rel="icon"]').href = `data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>${icon}</text></svg>`;
                 };
 
+                // 点击目录外部自动关闭目录
                 const handleOutsideClick = (event) => {
                     if (!isDesktop.value && isTocOpen.value) {
                         const tocElement = tocContainer.value;
                         const toggleBtn = document.querySelector('.toc-toggle');
-                        if (tocElement && !tocElement.contains(event.target) && !toggleBtn.contains(event.target)) {
+                        if (tocElement && !tocElement.contains(event.target) && !toggleBtn.contains(event.target))
+                         {
                             isTocOpen.value = false;
                         }
                     }
                 };
 
+                // 更新按钮位置的函数
                 const updateToggleButtonPosition = () => {
-                    if (!isAllLoaded.value) return; // 确保所有元素加载完成
-
                     if (isDesktop.value) {
                         const tocElement = tocContainer.value;
                         const toggleButton = document.querySelector('.toc-toggle');
                         if (tocElement && toggleButton) {
-                            toggleButton.style.left = !isTocOpen.value ? '5vw' : `calc(${tocElement.offsetWidth}px + 5vw)`;
+                            if (!isTocOpen.value) {
+                                // 目录折叠时，按钮移动到左侧 5% 处
+                                toggleButton.style.left = '5vw';
+                            } else {
+                                // 目录展开时，按钮移动到目录右侧 + 5% 处
+                                toggleButton.style.left = `calc(${tocElement.offsetWidth}px + 5vw)`;
+                            }
                         }
                     }
                 };
@@ -375,6 +490,7 @@
 
                 onMounted(() => {
                     fetchMarkdown();
+                    // calculateHeaderHeight(); // 不再需要
                     tocContainer.value = document.querySelector('.toc-container');
                     window.addEventListener('scroll', debounce(updateActiveSection, 200));
                     window.addEventListener('resize', throttle(handleResize, 300));
@@ -382,8 +498,8 @@
                     window.addEventListener('blur', () => updateFavicon(false));
                     document.addEventListener('click', handleOutsideClick);
 
-                    window.onload = () => { // 确保所有资源加载完毕
-                        isAllLoaded.value = true;
+                    // 使用 window.onload 确保所有资源加载完毕
+                    window.onload = () => {
                         updateToggleButtonPosition();
                     };
                 });
@@ -397,8 +513,7 @@
                     isLoading,
                     toggleToc,
                     scrollToSection,
-                    isButtonClicked,
-                    isAllLoaded
+                    isButtonClicked // 暴露给模板
                 };
             }
         }).mount('#app');
