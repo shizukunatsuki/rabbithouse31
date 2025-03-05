@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>木制结构小镇公约｜点兔频道及所属群聊公约</title>
+    <!-- 初始 favicon (空心圆) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>○</text></svg>">
     <style>
         /* 引入 Noto Sans SC 字体 */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100..900&display=swap');
@@ -418,6 +420,15 @@
                 tocToggle.classList.remove('toc-toggle-open');
             }
         }
+
+        // 监听 focus 和 blur 事件，更新 favicon
+        window.addEventListener('focus', () => {
+            document.querySelector('link[rel="icon"]').href = "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>●</text></svg>";
+        });
+
+        window.addEventListener('blur', () => {
+            document.querySelector('link[rel="icon"]').href = "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>○</text></svg>";
+        });
 
         // 调用加载和渲染 Markdown 的函数
         loadAndRenderMarkdown();
